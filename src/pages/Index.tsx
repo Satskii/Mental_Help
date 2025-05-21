@@ -1,12 +1,27 @@
-// Update this page (the content is just a fallback if you fail to update the page)
 
-const Index = () => {
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import Navbar from '@/components/Navbar';
+import LandingHero from '@/components/LandingHero';
+
+const Index: React.FC = () => {
+  const navigate = useNavigate();
+  
+  useEffect(() => {
+    // Auto redirect to chat page after 5 seconds
+    const redirectTimer = setTimeout(() => {
+      navigate('/chat');
+    }, 5000);
+    
+    return () => clearTimeout(redirectTimer);
+  }, [navigate]);
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
-      </div>
+    <div className="min-h-screen landing-gradient">
+      <Navbar />
+      <main className="container px-4 pt-16 md:pt-24 pb-16">
+        <LandingHero />
+      </main>
     </div>
   );
 };
