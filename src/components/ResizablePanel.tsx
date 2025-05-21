@@ -31,8 +31,11 @@ const ResizablePanel: React.FC<ResizablePanelProps> = ({
       split.destroy();
     }
 
+    // Get the elements as an array (not NodeList) to fix the type error
+    const elements = Array.from(document.querySelectorAll(`#${id} > div`));
+    
     // Create new split instance
-    const newSplit = Split(document.querySelectorAll(`#${id} > div`), {
+    const newSplit = Split(elements, {
       sizes: defaultSizes,
       minSize: minSizes,
       direction,
