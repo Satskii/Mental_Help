@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import Split from 'split.js';
 
 interface ResizablePanelProps {
@@ -18,6 +18,7 @@ const ResizablePanel: React.FC<ResizablePanelProps> = ({
   className = '',
 }) => {
   const [split, setSplit] = useState<Split.Instance | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const id = `split-${Math.random().toString(36).substring(2, 9)}`;
 
   useEffect(() => {
@@ -26,43 +27,64 @@ const ResizablePanel: React.FC<ResizablePanelProps> = ({
       return;
     }
 
-    // Clean up previous split instance
-    if (split) {
-      split.destroy();
-    }
-
-    // Get the elements and cast them explicitly to HTMLElement[] to fix the type error
-    const elements = Array.from(
-      document.querySelectorAll(`#${id} > div`)
-    ).map(el => el as HTMLElement);
-    
-    // Create new split instance
-    const newSplit = Split(elements, {
-      sizes: defaultSizes,
-      minSize: minSizes,
-      direction,
-      gutterSize: 4,
-      elementStyle: (dimension, size, gutterSize) => ({
-        'flex-basis': `calc(${size}% - ${gutterSize}px)`,
-      }),
-      gutterStyle: () => ({
-        'width': direction === 'horizontal' ? '4px' : '100%',
-        'height': direction === 'vertical' ? '4px' : '100%',
-      }),
-    });
-
-    setSplit(newSplit);
-
-    return () => {
-      if (newSplit) {
-        newSplit.destroy();
+    // Clean up function to safely destroy split instance
+    const cleanupSplit = () => {
+      if (split) {
+        try {
+          split.destroy();
+        } catch (error) {
+          console.error('Error destroying split instance:', error);
+        }
       }
     };
-  }, [children, direction]);
+
+    // Clean up previous split instance
+    cleanupSplit();
+
+    // Ensure the container exists and is mounted before initializing Split
+    if (!containerRef.current) {
+      return;
+    }
+
+    // Get the elements within the current container ref
+    const elements = Array.from(
+      containerRef.current.querySelectorAll(':scope > div')
+    ).map(el => el as HTMLElement);
+
+    if (elements.length !== 2) {
+      console.error('Expected exactly 2 div children, found:', elements.length);
+      return;
+    }
+    
+    try {
+      // Create new split instance
+      const newSplit = Split(elements, {
+        sizes: defaultSizes,
+        minSize: minSizes,
+        direction,
+        gutterSize: 4,
+        elementStyle: (dimension, size, gutterSize) => ({
+          'flex-basis': `calc(${size}% - ${gutterSize}px)`,
+        }),
+        gutterStyle: () => ({
+          'width': direction === 'horizontal' ? '4px' : '100%',
+          'height': direction === 'vertical' ? '4px' : '100%',
+        }),
+      });
+
+      setSplit(newSplit);
+    } catch (error) {
+      console.error('Error initializing Split.js:', error);
+    }
+
+    // Return cleanup function
+    return cleanupSplit;
+  }, [children, direction, defaultSizes, minSizes]);
 
   return (
     <div 
-      id={id} 
+      id={id}
+      ref={containerRef}
       className={`flex ${direction === 'horizontal' ? 'flex-row' : 'flex-col'} h-full w-full ${className}`}
     >
       {React.Children.map(children, (child, index) => (

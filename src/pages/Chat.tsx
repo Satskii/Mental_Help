@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import ChatSidebar from '@/components/ChatSidebar';
 import ChatInterface from '@/components/ChatInterface';
-import ResizablePanel from '@/components/ResizablePanel';
+import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 
 const Chat: React.FC = () => {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
@@ -14,38 +14,40 @@ const Chat: React.FC = () => {
   return (
     <div className="h-screen bg-background flex flex-col">
       <div className="flex-1 overflow-hidden">
-        <div className="chat-layout flex h-full">
-          {/* Mobile sidebar toggle */}
-          <div className="md:hidden fixed top-4 left-4 z-50">
-            <button 
-              onClick={toggleMobileSidebar}
-              className="p-2 bg-background border rounded-md shadow-sm"
-            >
-              {isMobileSidebarOpen ? 'Close' : 'Menu'}
-            </button>
-          </div>
+        {/* Mobile sidebar toggle */}
+        <div className="md:hidden fixed top-4 left-4 z-50">
+          <button 
+            onClick={toggleMobileSidebar}
+            className="p-2 bg-background border rounded-md shadow-sm"
+          >
+            {isMobileSidebarOpen ? 'Close' : 'Menu'}
+          </button>
+        </div>
 
-          {/* Mobile sidebar */}
-          <div className={`chat-panel md:hidden ${isMobileSidebarOpen ? 'active' : ''}`}>
+        {/* Mobile sidebar */}
+        <div className={`fixed inset-0 z-40 md:hidden ${isMobileSidebarOpen ? 'block' : 'hidden'}`}>
+          <div className="absolute inset-0 bg-background/80 backdrop-blur-sm" onClick={() => setIsMobileSidebarOpen(false)} />
+          <div className="absolute inset-y-0 left-0 w-3/4 max-w-xs bg-background">
             <ChatSidebar onClose={() => setIsMobileSidebarOpen(false)} />
           </div>
+        </div>
 
-          {/* Desktop resizable layout */}
-          <div className="hidden md:block h-full">
-            <ResizablePanel 
-              defaultSizes={[25, 75]} 
-              minSizes={[15, 30]}
-              direction="horizontal"
-            >
+        {/* Desktop resizable layout using shadcn/ui resizable */}
+        <div className="hidden md:block h-full">
+          <ResizablePanelGroup direction="horizontal" className="h-full">
+            <ResizablePanel defaultSize={25} minSize={15}>
               <ChatSidebar />
+            </ResizablePanel>
+            <ResizableHandle withHandle />
+            <ResizablePanel defaultSize={75} minSize={30}>
               <ChatInterface />
             </ResizablePanel>
-          </div>
+          </ResizablePanelGroup>
+        </div>
 
-          {/* Mobile chat interface (when sidebar is closed) */}
-          <div className="md:hidden w-full h-full">
-            {!isMobileSidebarOpen && <ChatInterface />}
-          </div>
+        {/* Mobile chat interface (when sidebar is closed) */}
+        <div className="md:hidden h-full">
+          {!isMobileSidebarOpen && <ChatInterface />}
         </div>
       </div>
     </div>
