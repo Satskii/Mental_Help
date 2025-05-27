@@ -78,10 +78,12 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({ onClose }) => {
       </div>
 
       <div className="mt-auto space-y-2">
-        <Button variant="ghost" className="w-full justify-start">
-          <Home className="mr-2 h-4 w-4" />
-          Home
-        </Button>
+        <Link to="/">
+          <Button variant="ghost" className="w-full justify-start">
+            <Home className="mr-2 h-4 w-4" />
+            Home
+          </Button>
+        </Link>
         <Button variant="ghost" className="w-full justify-start">
           <Info className="mr-2 h-4 w-4" />
           Resources
