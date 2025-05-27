@@ -143,11 +143,15 @@
 
 @layer components {
   .landing-gradient {
-    @apply bg-gradient-to-br from-mental-calm via-white to-mental-accent/20;
+    @apply bg-gradient-to-br from-mental-calm via-background to-mental-accent/20;
+  }
+
+  .dark .landing-gradient {
+    @apply bg-gradient-to-br from-slate-900 via-background to-mental-primary/10;
   }
 
   .hero-title {
-    @apply text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight;
+    @apply text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-foreground;
   }
 
   .hero-subtitle {
@@ -168,6 +172,10 @@
 
   .assistant-message {
     @apply bg-mental-calm/30;
+  }
+
+  .dark .assistant-message {
+    @apply bg-mental-primary/10;
   }
 
   .chat-input-container {
