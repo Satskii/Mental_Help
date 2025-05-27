@@ -1,6 +1,8 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { useToast } from "@/hooks/use-toast";
+import { Button } from '@/components/ui/button';
+import { PanelLeft, PanelLeftClose } from 'lucide-react';
 import ChatInput from '@/components/ChatInput';
 import SuicidePreventionAlert from '@/components/SuicidePreventionAlert';
 import { detectCrisisLanguage } from '@/utils/crisisDetection';
@@ -12,7 +14,12 @@ interface Message {
   timestamp: Date;
 }
 
-const ChatInterface: React.FC = () => {
+interface ChatInterfaceProps {
+  onToggleSidebar?: () => void;
+  sidebarHidden?: boolean;
+}
+
+const ChatInterface: React.FC<ChatInterfaceProps> = ({ onToggleSidebar, sidebarHidden }) => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -94,6 +101,20 @@ const ChatInterface: React.FC = () => {
     <div className="h-full flex flex-col justify-between bg-background">
       {showCrisisAlert && (
         <SuicidePreventionAlert onClose={() => setShowCrisisAlert(false)} />
+      )}
+      
+      {/* Toggle button for desktop */}
+      {onToggleSidebar && (
+        <div className="hidden md:flex p-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <Button 
+            variant="ghost" 
+            size="icon"
+            onClick={onToggleSidebar}
+            className="h-8 w-8"
+          >
+            {sidebarHidden ? <PanelLeft className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
+          </Button>
+        </div>
       )}
       
       <div className="flex-1 overflow-y-auto p-4">

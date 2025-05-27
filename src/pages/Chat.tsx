@@ -6,9 +6,14 @@ import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/componen
 
 const Chat: React.FC = () => {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const [isSidebarHidden, setIsSidebarHidden] = useState(false);
 
   const toggleMobileSidebar = () => {
     setIsMobileSidebarOpen(!isMobileSidebarOpen);
+  };
+
+  const toggleSidebarVisibility = () => {
+    setIsSidebarHidden(!isSidebarHidden);
   };
 
   return (
@@ -32,17 +37,23 @@ const Chat: React.FC = () => {
           </div>
         </div>
 
-        {/* Desktop resizable layout using shadcn/ui resizable */}
+        {/* Desktop layout */}
         <div className="hidden md:block h-full">
-          <ResizablePanelGroup direction="horizontal" className="h-full">
-            <ResizablePanel defaultSize={25} minSize={15}>
-              <ChatSidebar />
-            </ResizablePanel>
-            <ResizableHandle withHandle />
-            <ResizablePanel defaultSize={75} minSize={30}>
-              <ChatInterface />
-            </ResizablePanel>
-          </ResizablePanelGroup>
+          {isSidebarHidden ? (
+            // Full screen chat interface
+            <ChatInterface onToggleSidebar={toggleSidebarVisibility} sidebarHidden={true} />
+          ) : (
+            // Resizable layout with sidebar
+            <ResizablePanelGroup direction="horizontal" className="h-full">
+              <ResizablePanel defaultSize={25} minSize={15}>
+                <ChatSidebar />
+              </ResizablePanel>
+              <ResizableHandle withHandle />
+              <ResizablePanel defaultSize={75} minSize={30}>
+                <ChatInterface onToggleSidebar={toggleSidebarVisibility} sidebarHidden={false} />
+              </ResizablePanel>
+            </ResizablePanelGroup>
+          )}
         </div>
 
         {/* Mobile chat interface (when sidebar is closed) */}
