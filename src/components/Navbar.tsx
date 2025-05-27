@@ -15,14 +15,8 @@ const Navbar: React.FC = () => {
         </Link>
         
         <nav className="hidden md:flex items-center gap-6">
-          <Link to="/" className="text-sm font-medium hover:text-mental-primary transition-colors">
-            Home
-          </Link>
           <Link to="/about" className="text-sm font-medium hover:text-mental-primary transition-colors">
             About
-          </Link>
-          <Link to="/resources" className="text-sm font-medium hover:text-mental-primary transition-colors">
-            Resources
           </Link>
         </nav>
         
