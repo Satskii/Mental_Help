@@ -1,9 +1,9 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { PlusCircle, MessageSquare, Settings, Info, Home, Trash2 } from 'lucide-react';
 import { useChats } from '@/hooks/useChats';
+import DarkModeToggle from '@/components/DarkModeToggle';
 
 interface ChatSidebarProps {
   onClose?: () => void;
@@ -27,11 +27,14 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({ onClose }) => {
         <Link to="/" className="flex items-center gap-2">
           <span className="text-xl font-semibold">MindTalk</span>
         </Link>
-        {onClose && (
-          <Button variant="ghost" size="sm" onClick={onClose}>
-            Close
-          </Button>
-        )}
+        <div className="flex items-center gap-2">
+          <DarkModeToggle />
+          {onClose && (
+            <Button variant="ghost" size="sm" onClick={onClose}>
+              Close
+            </Button>
+          )}
+        </div>
       </div>
 
       <Button 

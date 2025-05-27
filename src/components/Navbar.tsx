@@ -2,6 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import DarkModeToggle from '@/components/DarkModeToggle';
 
 const Navbar: React.FC = () => {
   return (
@@ -26,6 +27,7 @@ const Navbar: React.FC = () => {
         </nav>
         
         <div className="flex items-center gap-4">
+          <DarkModeToggle />
           <Link to="/chat">
             <Button variant="default" className="bg-mental-primary hover:bg-mental-primary/90">
               Get Started

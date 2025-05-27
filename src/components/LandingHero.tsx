@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -25,9 +24,6 @@ const LandingHero: React.FC = () => {
             Start Talking Now
           </Button>
         </Link>
-        <p className="text-sm text-muted-foreground mt-2">
-          Redirecting to chat in 5 seconds...
-        </p>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl w-full mt-8">
