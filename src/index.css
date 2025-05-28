@@ -163,7 +163,7 @@
   }
 
   .message-container {
-    @apply p-4 md:p-6 flex flex-col gap-3 border-b;
+    @apply p-4 md:p-6 flex flex-col gap-3 border-b rounded-xl mb-2;
   }
 
   .user-message {

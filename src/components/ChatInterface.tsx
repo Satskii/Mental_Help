@@ -98,19 +98,19 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onToggleSidebar, sidebarH
   };
 
   return (
-    <div className="h-full flex flex-col justify-between bg-background">
+    <div className="h-full flex flex-col justify-between bg-background rounded-lg overflow-hidden">
       {showCrisisAlert && (
         <SuicidePreventionAlert onClose={() => setShowCrisisAlert(false)} />
       )}
       
       {/* Toggle button for desktop */}
       {onToggleSidebar && (
-        <div className="hidden md:flex p-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="hidden md:flex p-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 rounded-t-lg">
           <Button 
             variant="ghost" 
             size="icon"
             onClick={onToggleSidebar}
-            className="h-8 w-8"
+            className="h-8 w-8 rounded-lg"
           >
             {sidebarHidden ? <PanelLeft className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
           </Button>
@@ -122,7 +122,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onToggleSidebar, sidebarH
           {messages.map((message) => (
             <div 
               key={message.id} 
-              className={`message-container ${message.role === 'user' ? 'user-message' : 'assistant-message'}`}
+              className={`message-container rounded-xl ${message.role === 'user' ? 'user-message' : 'assistant-message'}`}
             >
               <div className="flex items-center gap-2 mb-2">
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
@@ -144,7 +144,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onToggleSidebar, sidebarH
         </div>
       </div>
       
-      <div className="sticky bottom-0 p-4 bg-gradient-to-t from-background via-background to-transparent">
+      <div className="sticky bottom-0 p-4 bg-gradient-to-t from-background via-background to-transparent rounded-b-lg">
         <ChatInput onSendMessage={handleSendMessage} />
       </div>
     </div>
