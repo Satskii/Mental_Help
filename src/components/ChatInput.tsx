@@ -94,18 +94,18 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage }) => {
     <form onSubmit={handleSubmit} className="chat-input-container">
       {/* File previews */}
       {uploadedFiles.length > 0 && (
-        <div className="mb-4 flex flex-wrap gap-3">
+        <div className="mb-3 flex flex-wrap gap-2">
           {uploadedFiles.map((uploadedFile, index) => (
-            <div key={index} className="relative bg-muted rounded-xl p-3 flex items-center gap-3 max-w-xs shadow-sm">
+            <div key={index} className="relative bg-muted rounded-lg p-2 flex items-center gap-2 max-w-xs shadow-sm">
               {uploadedFile.preview ? (
                 <img 
                   src={uploadedFile.preview} 
                   alt={uploadedFile.file.name}
-                  className="w-12 h-12 object-cover rounded-lg"
+                  className="w-10 h-10 object-cover rounded-lg"
                 />
               ) : (
-                <div className="w-12 h-12 bg-background rounded-lg flex items-center justify-center">
-                  <Paperclip className="h-5 w-5 text-muted-foreground" />
+                <div className="w-10 h-10 bg-background rounded-lg flex items-center justify-center">
+                  <Paperclip className="h-4 w-4 text-muted-foreground" />
                 </div>
               )}
               <div className="flex-1 min-w-0">
@@ -116,25 +116,25 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage }) => {
                 type="button"
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 rounded-full hover:bg-destructive/10 hover:text-destructive transition-colors"
+                className="h-6 w-6 rounded-full hover:bg-destructive/10 hover:text-destructive transition-colors"
                 onClick={() => removeFile(index)}
               >
-                <X className="h-4 w-4" />
+                <X className="h-3 w-3" />
               </Button>
             </div>
           ))}
         </div>
       )}
       
-      <div className="flex items-end gap-3">
+      <div className="flex items-end gap-2">
         <Button
           type="button"
           variant="ghost"
           size="icon"
-          className="h-12 w-12 flex-shrink-0 rounded-xl hover:bg-muted transition-colors"
+          className="h-10 w-10 flex-shrink-0 rounded-lg hover:bg-muted transition-colors"
           onClick={() => fileInputRef.current?.click()}
         >
-          <Paperclip className="h-5 w-5" />
+          <Paperclip className="h-4 w-4" />
         </Button>
         
         <div className="flex-1">
@@ -144,17 +144,17 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage }) => {
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             onKeyDown={handleKeyDown}
-            className="min-h-[48px] max-h-[200px] resize-none bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 border-0 px-0 py-3"
+            className="min-h-[40px] max-h-[160px] resize-none bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 border-0 px-0 py-2"
           />
         </div>
         
         <Button 
           type="submit" 
           size="icon" 
-          className="h-12 w-12 bg-mental-primary hover:bg-mental-primary/90 rounded-xl flex-shrink-0 transition-colors"
+          className="h-10 w-10 bg-mental-primary hover:bg-mental-primary/90 rounded-lg flex-shrink-0 transition-colors"
           disabled={!message.trim() && uploadedFiles.length === 0}
         >
-          <Send className="h-5 w-5" />
+          <Send className="h-4 w-4" />
         </Button>
       </div>
       
