@@ -163,10 +163,6 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage }) => {
         onChange={handleFileUpload}
         className="hidden"
       />
-      
-      <div className="text-xs text-muted-foreground mt-2">
-        Press Enter to send, Shift+Enter for new line
-      </div>
     </form>
   );
 };
