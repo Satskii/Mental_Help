@@ -1,8 +1,7 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { Button } from '@/components/ui/button';
-import { PanelLeft, PanelLeftClose } from 'lucide-react';
+import { PanelLeft, PanelLeftClose, Paperclip } from 'lucide-react';
 import ChatInput from '@/components/ChatInput';
 import SuicidePreventionAlert from '@/components/SuicidePreventionAlert';
 import { detectCrisisLanguage } from '@/utils/crisisDetection';
@@ -12,6 +11,7 @@ interface Message {
   role: 'user' | 'assistant' | 'system';
   content: string;
   timestamp: Date;
+  files?: File[];
 }
 
 interface ChatInterfaceProps {
@@ -40,15 +40,16 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onToggleSidebar, sidebarH
     scrollToBottom();
   }, [messages]);
 
-  const handleSendMessage = (content: string) => {
-    if (!content.trim()) return;
+  const handleSendMessage = (content: string, files?: File[]) => {
+    if (!content.trim() && (!files || files.length === 0)) return;
     
     // Add user message
     const userMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
       content,
-      timestamp: new Date()
+      timestamp: new Date(),
+      files
     };
     
     setMessages(prev => [...prev, userMessage]);
@@ -69,7 +70,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onToggleSidebar, sidebarH
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: generateResponse(content, hasCrisisLanguage),
+        content: generateResponse(content, hasCrisisLanguage, files),
         timestamp: new Date()
       };
       
@@ -77,7 +78,12 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onToggleSidebar, sidebarH
     }, 1000);
   };
 
-  const generateResponse = (userMessage: string, isCrisis: boolean): string => {
+  const generateResponse = (userMessage: string, isCrisis: boolean, files?: File[]): string => {
+    if (files && files.length > 0) {
+      const fileTypes = files.map(f => f.type).join(', ');
+      return `I can see you've shared ${files.length} file(s) with me. While I can't process the actual content of files yet, I acknowledge that you've shared: ${files.map(f => f.name).join(', ')}. Please describe what you'd like to discuss about these files, and I'll do my best to help you.`;
+    }
+    
     if (isCrisis) {
       return "I notice you might be going through a difficult time. Remember, it's okay to ask for help. Please consider reaching out to someone you trust or a professional. Would you like me to provide resources that might help?";
     }
@@ -95,6 +101,14 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onToggleSidebar, sidebarH
     }
     
     return "Thank you for sharing. Your feelings are valid, and it's important to acknowledge them. Would you like to talk more about what's on your mind or discuss some coping strategies?";
+  };
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
   return (
@@ -137,6 +151,17 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onToggleSidebar, sidebarH
               </div>
               <div className="pl-10">
                 {message.content}
+                {message.files && message.files.length > 0 && (
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {message.files.map((file, index) => (
+                      <div key={index} className="bg-muted rounded-lg p-2 flex items-center gap-2 text-sm">
+                        <Paperclip className="h-4 w-4" />
+                        <span className="font-medium">{file.name}</span>
+                        <span className="text-muted-foreground">({formatFileSize(file.size)})</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           ))}
