@@ -94,18 +94,18 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage }) => {
     <form onSubmit={handleSubmit} className="chat-input-container">
       {/* File previews */}
       {uploadedFiles.length > 0 && (
-        <div className="mb-3 flex flex-wrap gap-2">
+        <div className="mb-4 flex flex-wrap gap-3">
           {uploadedFiles.map((uploadedFile, index) => (
-            <div key={index} className="relative bg-muted rounded-lg p-2 flex items-center gap-2 max-w-xs">
+            <div key={index} className="relative bg-muted rounded-xl p-3 flex items-center gap-3 max-w-xs shadow-sm">
               {uploadedFile.preview ? (
                 <img 
                   src={uploadedFile.preview} 
                   alt={uploadedFile.file.name}
-                  className="w-10 h-10 object-cover rounded"
+                  className="w-12 h-12 object-cover rounded-lg"
                 />
               ) : (
-                <div className="w-10 h-10 bg-background rounded flex items-center justify-center">
-                  <Paperclip className="h-4 w-4" />
+                <div className="w-12 h-12 bg-background rounded-lg flex items-center justify-center">
+                  <Paperclip className="h-5 w-5 text-muted-foreground" />
                 </div>
               )}
               <div className="flex-1 min-w-0">
@@ -116,42 +116,45 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage }) => {
                 type="button"
                 variant="ghost"
                 size="icon"
-                className="h-6 w-6 rounded-full"
+                className="h-8 w-8 rounded-full hover:bg-destructive/10 hover:text-destructive transition-colors"
                 onClick={() => removeFile(index)}
               >
-                <X className="h-3 w-3" />
+                <X className="h-4 w-4" />
               </Button>
             </div>
           ))}
         </div>
       )}
       
-      <div className="flex items-end">
+      <div className="flex items-end gap-3">
         <Button
           type="button"
           variant="ghost"
           size="icon"
-          className="mr-2 h-10 w-10 flex-shrink-0"
+          className="h-12 w-12 flex-shrink-0 rounded-xl hover:bg-muted transition-colors"
           onClick={() => fileInputRef.current?.click()}
         >
-          <Paperclip className="h-4 w-4" />
+          <Paperclip className="h-5 w-5" />
         </Button>
         
-        <Textarea
-          ref={textareaRef}
-          placeholder="Type your message here..."
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          onKeyDown={handleKeyDown}
-          className="min-h-[60px] resize-none flex-1 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 border-0"
-        />
+        <div className="flex-1">
+          <Textarea
+            ref={textareaRef}
+            placeholder="Type your message here..."
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            onKeyDown={handleKeyDown}
+            className="min-h-[48px] max-h-[200px] resize-none bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 border-0 px-0 py-3"
+          />
+        </div>
         
         <Button 
           type="submit" 
           size="icon" 
-          className="ml-2 bg-mental-primary hover:bg-mental-primary/90 h-10 w-10 rounded-full flex-shrink-0"
+          className="h-12 w-12 bg-mental-primary hover:bg-mental-primary/90 rounded-xl flex-shrink-0 transition-colors"
+          disabled={!message.trim() && uploadedFiles.length === 0}
         >
-          <Send className="h-4 w-4" />
+          <Send className="h-5 w-5" />
         </Button>
       </div>
       
