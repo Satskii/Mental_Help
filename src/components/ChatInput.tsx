@@ -1,11 +1,14 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { Send, Paperclip, X } from 'lucide-react';
+import { Send, Paperclip, X, Mic, MicOff, Volume2, VolumeX } from 'lucide-react';
+import { speechManager } from '@/utils/speechUtils';
+import { useToast } from "@/hooks/use-toast";
 
 interface ChatInputProps {
   onSendMessage: (message: string, files?: File[]) => void;
+  isSpeaking?: boolean;
+  onToggleSpeech?: () => void;
 }
 
 interface UploadedFile {
@@ -13,11 +16,14 @@ interface UploadedFile {
   preview?: string;
 }
 
-const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage }) => {
+const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isSpeaking, onToggleSpeech }) => {
   const [message, setMessage] = useState('');
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
+  const [isListening, setIsListening] = useState(false);
+  const [speechEnabled, setSpeechEnabled] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     if (textareaRef.current) {
@@ -26,6 +32,14 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage }) => {
       textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
     }
   }, [message]);
+
+  useEffect(() => {
+    // Check if speech features are supported
+    const support = speechManager.isSupported();
+    if (!support.speechRecognition || !support.speechSynthesis) {
+      console.warn('Speech features not fully supported in this browser');
+    }
+  }, []);
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
@@ -82,6 +96,60 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage }) => {
     }
   };
 
+  const handleMicrophoneClick = async () => {
+    if (isListening) {
+      speechManager.stopListening();
+      setIsListening(false);
+      return;
+    }
+
+    try {
+      setIsListening(true);
+      
+      await speechManager.startListening(
+        (text) => {
+          setMessage(prev => prev + (prev ? ' ' : '') + text);
+          setIsListening(false);
+          toast({
+            title: "Speech captured",
+            description: "Your speech has been converted to text.",
+          });
+        },
+        (error) => {
+          setIsListening(false);
+          toast({
+            title: "Speech recognition error",
+            description: error,
+            variant: "destructive",
+          });
+        }
+      );
+    } catch (error) {
+      setIsListening(false);
+      toast({
+        title: "Microphone access denied",
+        description: "Please allow microphone access to use speech input.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const toggleSpeechOutput = () => {
+    setSpeechEnabled(!speechEnabled);
+    onToggleSpeech?.();
+    
+    if (speechEnabled) {
+      speechManager.stopSpeaking();
+    }
+    
+    toast({
+      title: speechEnabled ? "Speech output disabled" : "Speech output enabled",
+      description: speechEnabled ? 
+        "AI responses will no longer be read aloud." : 
+        "AI responses will be read aloud.",
+    });
+  };
+
   const formatFileSize = (bytes: number) => {
     if (bytes === 0) return '0 Bytes';
     const k = 1024;
@@ -136,11 +204,37 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage }) => {
         >
           <Paperclip className="h-4 w-4" />
         </Button>
+
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className={`h-10 w-10 flex-shrink-0 rounded-lg transition-colors ${
+            isListening ? 'bg-red-100 text-red-600 hover:bg-red-200' : 'hover:bg-muted'
+          }`}
+          onClick={handleMicrophoneClick}
+          title={isListening ? "Stop listening" : "Start voice input"}
+        >
+          {isListening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+        </Button>
+
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className={`h-10 w-10 flex-shrink-0 rounded-lg transition-colors ${
+            speechEnabled ? 'bg-blue-100 text-blue-600 hover:bg-blue-200' : 'hover:bg-muted'
+          }`}
+          onClick={toggleSpeechOutput}
+          title={speechEnabled ? "Disable speech output" : "Enable speech output"}
+        >
+          {speechEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
+        </Button>
         
         <div className="flex-1">
           <Textarea
             ref={textareaRef}
-            placeholder="Type your message here..."
+            placeholder="Type your message here or use voice input..."
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             onKeyDown={handleKeyDown}

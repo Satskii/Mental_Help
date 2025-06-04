@@ -5,6 +5,7 @@ import { PanelLeft, PanelLeftClose, Paperclip } from 'lucide-react';
 import ChatInput from '@/components/ChatInput';
 import SuicidePreventionAlert from '@/components/SuicidePreventionAlert';
 import { detectCrisisLanguage } from '@/utils/crisisDetection';
+import { speechManager } from '@/utils/speechUtils';
 
 interface Message {
   id: string;
@@ -29,6 +30,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onToggleSidebar, sidebarH
     }
   ]);
   const [showCrisisAlert, setShowCrisisAlert] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [speechEnabled, setSpeechEnabled] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
@@ -40,8 +43,46 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onToggleSidebar, sidebarH
     scrollToBottom();
   }, [messages]);
 
+  // Speak the latest assistant message when speech is enabled
+  useEffect(() => {
+    if (speechEnabled && messages.length > 0) {
+      const latestMessage = messages[messages.length - 1];
+      if (latestMessage.role === 'assistant' && latestMessage.id !== '1') {
+        handleSpeakMessage(latestMessage.content);
+      }
+    }
+  }, [messages, speechEnabled]);
+
+  const handleSpeakMessage = async (text: string) => {
+    if (!speechEnabled) return;
+    
+    setIsSpeaking(true);
+    try {
+      await speechManager.speak(text, () => {
+        setIsSpeaking(false);
+      });
+    } catch (error) {
+      setIsSpeaking(false);
+      console.error('Speech synthesis error:', error);
+    }
+  };
+
+  const handleToggleSpeech = () => {
+    setSpeechEnabled(!speechEnabled);
+    if (speechEnabled) {
+      speechManager.stopSpeaking();
+      setIsSpeaking(false);
+    }
+  };
+
   const handleSendMessage = (content: string, files?: File[]) => {
     if (!content.trim() && (!files || files.length === 0)) return;
+    
+    // Stop any ongoing speech
+    if (isSpeaking) {
+      speechManager.stopSpeaking();
+      setIsSpeaking(false);
+    }
     
     // Add user message
     const userMessage: Message = {
@@ -170,7 +211,11 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onToggleSidebar, sidebarH
       </div>
       
       <div className="sticky bottom-0 p-4 bg-gradient-to-t from-background via-background to-transparent rounded-b-lg">
-        <ChatInput onSendMessage={handleSendMessage} />
+        <ChatInput 
+          onSendMessage={handleSendMessage} 
+          isSpeaking={isSpeaking}
+          onToggleSpeech={handleToggleSpeech}
+        />
       </div>
     </div>
   );
