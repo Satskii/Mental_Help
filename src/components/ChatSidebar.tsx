@@ -1,9 +1,11 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { PlusCircle, MessageSquare, Settings, Info, Home, Trash2 } from 'lucide-react';
+import { PlusCircle, MessageSquare, Home, Trash2 } from 'lucide-react';
 import { useChats } from '@/hooks/useChats';
 import DarkModeToggle from '@/components/DarkModeToggle';
+import SettingsDialog from '@/components/SettingsDialog';
 
 interface ChatSidebarProps {
   onClose?: () => void;
@@ -87,14 +89,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({ onClose }) => {
             Home
           </Button>
         </Link>
-        <Button variant="ghost" className="w-full justify-start">
-          <Info className="mr-2 h-4 w-4" />
-          Resources
-        </Button>
-        <Button variant="ghost" className="w-full justify-start">
-          <Settings className="mr-2 h-4 w-4" />
-          Settings
-        </Button>
+        <SettingsDialog />
       </div>
     </aside>
   );

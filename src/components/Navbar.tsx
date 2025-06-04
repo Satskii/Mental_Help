@@ -14,12 +14,6 @@ const Navbar: React.FC = () => {
           </span>
         </Link>
         
-        <nav className="hidden md:flex items-center gap-6">
-          <Link to="/about" className="text-sm font-medium hover:text-mental-primary transition-colors">
-            About
-          </Link>
-        </nav>
-        
         <div className="flex items-center gap-4">
           <DarkModeToggle />
           <Link to="/chat">
