@@ -6,14 +6,7 @@ import ChatInput from '@/components/ChatInput';
 import SuicidePreventionAlert from '@/components/SuicidePreventionAlert';
 import { detectCrisisLanguage } from '@/utils/crisisDetection';
 import { speechManager } from '@/utils/speechUtils';
-
-interface Message {
-  id: string;
-  role: 'user' | 'assistant' | 'system';
-  content: string;
-  timestamp: Date;
-  files?: File[];
-}
+import { useChats, Message } from '@/hooks/useChats';
 
 interface ChatInterfaceProps {
   onToggleSidebar?: () => void;
@@ -21,14 +14,8 @@ interface ChatInterfaceProps {
 }
 
 const ChatInterface: React.FC<ChatInterfaceProps> = ({ onToggleSidebar, sidebarHidden }) => {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      role: 'assistant',
-      content: 'Hello! I\'m here to provide support for your mental health concerns. How are you feeling today?',
-      timestamp: new Date()
-    }
-  ]);
+  const { activeChat, addMessageToChat, getCurrentChatMessages } = useChats();
+  const messages = getCurrentChatMessages();
   const [showCrisisAlert, setShowCrisisAlert] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [speechEnabled, setSpeechEnabled] = useState(false);
@@ -77,6 +64,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onToggleSidebar, sidebarH
 
   const handleSendMessage = (content: string, files?: File[]) => {
     if (!content.trim() && (!files || files.length === 0)) return;
+    if (!activeChat) return;
     
     // Stop any ongoing speech
     if (isSpeaking) {
@@ -93,7 +81,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onToggleSidebar, sidebarH
       files
     };
     
-    setMessages(prev => [...prev, userMessage]);
+    addMessageToChat(activeChat, userMessage);
     
     // Check for crisis language
     const hasCrisisLanguage = detectCrisisLanguage(content);
@@ -115,7 +103,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onToggleSidebar, sidebarH
         timestamp: new Date()
       };
       
-      setMessages(prev => [...prev, assistantMessage]);
+      addMessageToChat(activeChat, assistantMessage);
     }, 1000);
   };
 
