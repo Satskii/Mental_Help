@@ -81,11 +81,13 @@ export const useChats = () => {
   };
 
   const deleteChat = (chatId: string) => {
-    setChats(prev => prev.filter(chat => chat.id !== chatId));
-    if (activeChat === chatId) {
-      const remainingChats = chats.filter(chat => chat.id !== chatId);
-      setActiveChat(remainingChats.length > 0 ? remainingChats[0].id : null);
-    }
+    setChats(prev => {
+      const remainingChats = prev.filter(chat => chat.id !== chatId);
+      if (activeChat === chatId) {
+        setActiveChat(remainingChats.length > 0 ? remainingChats[0].id : null);
+      }
+      return remainingChats;
+    });
   };
 
   const selectChat = (chatId: string) => {
