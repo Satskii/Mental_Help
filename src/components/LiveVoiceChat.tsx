@@ -69,7 +69,7 @@ const LiveVoiceChat: React.FC<LiveVoiceChatProps> = ({ onClose }) => {
       }
 
       const body = await response.json();
-      await conversation.startSession({ url: body.signed_url });
+      await conversation.startSession({ signedUrl: body.signed_url });
     } catch (error) {
       toast({
         title: "Failed to start conversation",
