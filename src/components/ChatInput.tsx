@@ -1,7 +1,9 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { Send, Paperclip, X, Mic, MicOff, Volume2, VolumeX, Phone } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Send, Paperclip, X, Mic, MicOff, Volume2, VolumeX, Phone, Languages } from 'lucide-react';
 import { speechManager } from '@/utils/speechUtils';
 import { useToast } from "@/hooks/use-toast";
 import LiveVoiceChat from '@/components/LiveVoiceChat';
@@ -23,6 +25,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isSpeaking, onTogg
   const [isListening, setIsListening] = useState(false);
   const [speechEnabled, setSpeechEnabled] = useState(false);
   const [showLiveVoiceChat, setShowLiveVoiceChat] = useState(false);
+  const [outputLanguage, setOutputLanguage] = useState('en');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
@@ -160,9 +163,36 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isSpeaking, onTogg
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
+  const getLanguageName = (code: string) => {
+    switch (code) {
+      case 'en': return 'English';
+      case 'bn': return 'Bengali';
+      case 'hi': return 'Hindi';
+      default: return 'English';
+    }
+  };
+
   return (
     <>
       <form onSubmit={handleSubmit} className="chat-input-container">
+        {/* Language Selection Toolbar */}
+        <div className="flex items-center justify-between mb-3 p-2 bg-muted/50 rounded-lg">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Languages className="h-4 w-4" />
+            <span>Output Language:</span>
+          </div>
+          <Select value={outputLanguage} onValueChange={setOutputLanguage}>
+            <SelectTrigger className="w-36 h-8 text-sm">
+              <SelectValue placeholder="Select language" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="en">English</SelectItem>
+              <SelectItem value="bn">Bengali</SelectItem>
+              <SelectItem value="hi">Hindi</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
         {/* File previews */}
         {uploadedFiles.length > 0 && (
           <div className="mb-3 flex flex-wrap gap-2">
@@ -197,7 +227,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isSpeaking, onTogg
           </div>
         )}
         
-        <div className="flex items-end gap-2">
+        <div className="flex items-end gap-1">
           <Button
             type="button"
             variant="ghost"
