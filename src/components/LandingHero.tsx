@@ -1,7 +1,9 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import ProjectDocumentation from '@/components/ProjectDocumentation';
 
 const LandingHero: React.FC = () => {
   return (
@@ -18,12 +20,16 @@ const LandingHero: React.FC = () => {
         Get support when you need it most.
       </p>
       
-      <div className="mb-10">
+      <div className="mb-6">
         <Link to="/chat">
           <Button className="cta-button animate-bounce-subtle">
             Start Talking Now
           </Button>
         </Link>
+      </div>
+
+      <div className="mb-10">
+        <ProjectDocumentation />
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl w-full mt-8">
